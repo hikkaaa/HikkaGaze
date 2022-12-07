@@ -7,6 +7,8 @@ from detectron2 import model_zoo
 import cv2
 import numpy as np
 
+import time
+
 
 class Detector:
     
@@ -39,15 +41,28 @@ class Detector:
         
     def onVideo(self):
         cap = cv2.VideoCapture(0)
+
+        # cap.set(3, 50)
+        # cap.set(4, 50)
         
-        (success, image) = cap.read()
+        dataset = self.cfg.DATASETS.TRAIN[0]
         
-        while success:
+        while True:
+
+            (_, image) = cap.read()
+            time.sleep(2)
+
             predictions, segments_info = self.predictor(image)["panoptic_seg"]
-            viz = Visualizer(image[:,:,::-1], metadata = MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0]))
-            output = viz.draw_panoptic_seg_predictions(predictions.to("cpu"), segments_info)
+            viz = Visualizer(image[:,:,::-1], metadata = MetadataCatalog.get(dataset))
             
-            cv2.imshow("Result", output.get_image()[:,:,::-1])
-            k = cv2.waitKey(1)
-            if k == 27:
-                break
+            try:
+                output = viz.draw_panoptic_seg_predictions(predictions.to("cpu"), segments_info)
+                
+                cv2.imshow("Result", output.get_image()[:,:,::-1])
+                k = cv2.waitKey(1000)
+                if k == 27:
+                    break
+            except:
+                print("ERROR")
+        cap.release()
+        cv2.destroyAllWindows()
