@@ -59,6 +59,39 @@ def getArch(arch,bins):
         model = L2CS( torchvision.models.resnet.Bottleneck, [3, 4, 6,  3], bins)
     return model
 
+import torch
+import math
+
+import math
+
+def get_direction(gaze_yaw, gaze_pitch):
+    # Convert radians to degrees  
+    gaze_yaw = gaze_yaw[0][0].item()
+    gaze_pitch = gaze_pitch[0][0].item()
+    gaze_yaw = (gaze_yaw * 180 / math.pi)
+    gaze_pitch = (gaze_pitch * 180 / math.pi)
+    
+    # Compute the destination point
+    dest_x = -math.sin(gaze_yaw) * math.cos(gaze_pitch)
+    dest_y = math.sin(gaze_pitch)
+    
+    # Compute the angle
+    angle = math.atan2(dest_y, dest_x) * 180 / math.pi
+    
+    # Compute the direction
+    if angle < -45 and angle >= -135:
+        return 'W'
+    elif angle < 135 and angle >= 45:
+        return 'E'
+    elif angle < -135 or angle >= 135:
+        return 'N'
+    else:
+        return 'S'
+
+
+
+
+
 if __name__ == '__main__':
     args = parse_args()
 
@@ -104,6 +137,7 @@ if __name__ == '__main__':
         while True:
             success, frame = cap.read()    
             start_fps = time.time()  
+           
             faces = detector(frame)
             if faces is not None: 
                 for box, landmarks, score in faces:
@@ -138,6 +172,9 @@ if __name__ == '__main__':
                     # gaze prediction
                     gaze_pitch, gaze_yaw = model(img)
                     
+                    # direction prediction
+                    direction = get_direction(gaze_yaw, gaze_pitch)
+                    print(direction)
                     
                     pitch_predicted = softmax(gaze_pitch)
                     yaw_predicted = softmax(gaze_yaw)
@@ -154,7 +191,7 @@ if __name__ == '__main__':
                     draw_gaze(x_min,y_min,bbox_width, bbox_height,frame,(pitch_predicted,yaw_predicted),color=(0,0,255))
                     cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (0,255,0), 1)
             myFPS = 1.0 / (time.time() - start_fps)
-            cv2.putText(frame, 'FPS: {:.1f}'.format(myFPS), (10, 20),cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 255, 0), 1, cv2.LINE_AA)
+            cv2.putText(frame, f'Gaze direction: {direction}', (10, 20),cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 255, 0), 1, cv2.LINE_AA)
 
             cv2.imshow("Demo",frame)
             if cv2.waitKey(1) & 0xFF == 27:
