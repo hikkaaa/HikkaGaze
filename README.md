@@ -12,7 +12,10 @@ https://ai.googleblog.com/2020/03/real-time-3d-object-detection-on-mobile.html
 # USER GAZE
 source: https://github.com/ahmednull/l2cs-net
 
-Changes applied to make it run on CPU:
+**TO RUN demo.py**
+python demo.py --snapshot .\models\L2CSNet_gaze360.pkl --cam 0
+
+**Changes applied to make it run on CPU**:
 - remove references to GPU-related functions or libraries such as "torch.backends.cudnn", "model.cuda()", "torch.FloatTensor().cuda()"
 - replace these with corresponding CPU tensor "torch.FloatTensor(idx_tensor)
 - Change device for model evaluation and data loading to CPU: "model.to("cpu")", "img.to("cpu")"
