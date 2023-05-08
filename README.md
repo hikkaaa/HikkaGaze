@@ -28,3 +28,8 @@ If the direction is West, the function crops a square region of size crop_size a
 
 After calculating the crop region, the function crops the region from the frame and saves it to the save_folder with a timestamp. Finally, it returns the cropped frame as output.
 The idea is to apply Detectron2 object detection algorithm to this cropped frame to identify the objectt the user is looking at. 
+
+
+## TO DO:
+- implement Detectron2 algorithm for object detection
+- apply Detecron2 algorithm to cropped frame
