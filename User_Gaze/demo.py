@@ -2,6 +2,7 @@ import argparse
 import numpy as np
 import cv2
 import time
+import math
 
 import torch
 import torch.nn as nn
@@ -13,7 +14,6 @@ import torchvision
 from PIL import Image
 from utils import select_device, draw_gaze
 from PIL import Image, ImageOps
-
 from face_detection import RetinaFace
 from model import L2CS
 
@@ -59,17 +59,13 @@ def getArch(arch,bins):
         model = L2CS( torchvision.models.resnet.Bottleneck, [3, 4, 6,  3], bins)
     return model
 
-import torch
-import math
-
-import math
 
 def get_direction(gaze_yaw, gaze_pitch):
     # Convert radians to degrees  
-    gaze_yaw = gaze_yaw[0][0].item()
-    gaze_pitch = gaze_pitch[0][0].item()
-    gaze_yaw = (gaze_yaw * 180 / math.pi)
-    gaze_pitch = (gaze_pitch * 180 / math.pi)
+    #gaze_yaw = gaze_yaw[0][0].item()
+    #gaze_pitch = gaze_pitch[0][0].item()
+    #gaze_yaw = (gaze_yaw * 180 / math.pi)
+    #gaze_pitch = (gaze_pitch * 180 / math.pi)
     
     # Compute the destination point
     dest_x = -math.sin(gaze_yaw) * math.cos(gaze_pitch)
@@ -87,8 +83,6 @@ def get_direction(gaze_yaw, gaze_pitch):
         return 'N'
     else:
         return 'S'
-
-
 
 
 
@@ -128,6 +122,9 @@ if __name__ == '__main__':
 
 
     cap = cv2.VideoCapture(cam)
+    #width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    #height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
 
     # Check if the webcam is opened correctly
     if not cap.isOpened():
@@ -135,9 +132,8 @@ if __name__ == '__main__':
 
     with torch.no_grad():
         while True:
-            success, frame = cap.read()    
-            start_fps = time.time()  
-           
+            success, frame = cap.read() 
+    
             faces = detector(frame)
             if faces is not None: 
                 for box, landmarks, score in faces:
@@ -172,9 +168,6 @@ if __name__ == '__main__':
                     # gaze prediction
                     gaze_pitch, gaze_yaw = model(img)
                     
-                    # direction prediction
-                    direction = get_direction(gaze_yaw, gaze_pitch)
-                    print(direction)
                     
                     pitch_predicted = softmax(gaze_pitch)
                     yaw_predicted = softmax(gaze_yaw)
@@ -185,17 +178,19 @@ if __name__ == '__main__':
                     
                     pitch_predicted= pitch_predicted.cpu().detach().numpy()* np.pi/180.0
                     yaw_predicted= yaw_predicted.cpu().detach().numpy()* np.pi/180.0
+                    
+                    # direction prediction
+                    direction = get_direction(yaw_predicted, pitch_predicted)
+                    print(direction)
 
                 
                     
                     draw_gaze(x_min,y_min,bbox_width, bbox_height,frame,(pitch_predicted,yaw_predicted),color=(0,0,255))
                     cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (0,255,0), 1)
-            myFPS = 1.0 / (time.time() - start_fps)
-            cv2.putText(frame, f'Gaze direction: {direction}', (10, 20),cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 255, 0), 1, cv2.LINE_AA)
+
+            cv2.putText(frame, f'Gaze position: {direction}', (10, 20),cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 255, 0), 1, cv2.LINE_AA)
 
             cv2.imshow("Demo",frame)
             if cv2.waitKey(1) & 0xFF == 27:
                 break
             success,frame = cap.read()  
-
-
