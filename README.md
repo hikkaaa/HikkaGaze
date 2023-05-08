@@ -17,7 +17,12 @@ The *get_direction* function takes two arguments gaze_yaw and gaze_pitch, which 
 
 It first computes the destination point on a sphere using the horizontal and vertical angles of the gaze. Then, it calculates the angle between the destination point and the origin point (the center of the sphere) using math.atan2 function. The angle is converted from radians to degrees and stored in the variable angle.
 
-Finally, based on the angle value, the function returns the direction of the gaze, which can be one of the four cardinal directions: W for west, E for east, N for north, or S for south. The angle ranges used to determine the direction are -45 to -135 for west, 45 to 135 for east, less than -135 or greater than or equal to 135 for north, and everything else for south.
+Finally, based on the angle value, the function returns the direction of the gaze, which can be one of the four cardinal directions: W for west, E for east, N for north, or S for south. The angle ranges used to determine the direction are -45 to -135 for west, 45 to 135 for east, less than -135 or greater than or equal to 135 for north, and everything else for south.\
+
+
+https://user-images.githubusercontent.com/92394378/236919329-42a0eea4-79d5-4e87-9449-ea4bda5fc9cc.mp4
+
+
 
 **FRAME CROPPING** \
 This function takes as input a frame from a webcam or camera, along with gaze_yaw and gaze_pitch values, which are predicted by a gaze estimation algorithm. It also takes the crop_size of the region around the gaze point to be cropped and the save_folder, where the cropped images will be saved with a timestamp. Lastly, it takes the direction of the gaze point, which is predicted by the get_direction function.
