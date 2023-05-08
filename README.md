@@ -13,10 +13,18 @@ source: https://github.com/ahmednull/l2cs-net
   
   
 **CARDINAL DIRECTION DETECTION** \
-The *get_direction* function takes in two arguments gaze_yaw and gaze_pitch, which represent the yaw and pitch of the gaze direction, respectively. The yaw is the angle between the gaze direction and the horizontal axis, and the pitch is the angle between the gaze direction and the vertical axis. These angles are usually measured in radians.
+The *get_direction* function takes two arguments gaze_yaw and gaze_pitch, which are the horizontal and vertical angles of a person's gaze, respectively.
 
-The function first converts the angles from radians to degrees, as it is more common to work with degrees when dealing with directions. Then, it computes the destination point using the sin and cos trigonometric functions based on the yaw and pitch angles. The sin and cos functions return the x and y coordinates of the destination point on a unit sphere centered at the origin, respectively.
+It first computes the destination point on a sphere using the horizontal and vertical angles of the gaze. Then, it calculates the angle between the destination point and the origin point (the center of the sphere) using math.atan2 function. The angle is converted from radians to degrees and stored in the variable angle.
 
-Next, the function calculates the angle between the destination point and the positive x-axis using the atan2 function. The atan2 function returns the angle in radians, so the result is converted to degrees using the multiplication factor of 180/pi.
+Finally, based on the angle value, the function returns the direction of the gaze, which can be one of the four cardinal directions: W for west, E for east, N for north, or S for south. The angle ranges used to determine the direction are -45 to -135 for west, 45 to 135 for east, less than -135 or greater than or equal to 135 for north, and everything else for south.
 
-Finally, the function determines the direction based on the angle. If the angle is between -45 and -135 degrees, the direction is considered to be west (W). If the angle is between 45 and 135 degrees, the direction is considered to be east (E). If the angle is between -135 and -45 degrees or between 135 and 45 degrees, the direction is considered to be north (N). Otherwise, the direction is considered to be south (S).
+**FRAME CROPPING** \
+This function takes as input a frame from a webcam or camera, along with gaze_yaw and gaze_pitch values, which are predicted by a gaze estimation algorithm. It also takes the crop_size of the region around the gaze point to be cropped and the save_folder, where the cropped images will be saved with a timestamp. Lastly, it takes the direction of the gaze point, which is predicted by the get_direction function.
+
+The function first calculates the gaze coordinates on the frame by converting gaze_yaw and gaze_pitch values into pixel coordinates, which are based on the frame dimensions. Then, based on the direction of the gaze point, it calculates the crop region to be extracted from the frame.
+
+If the direction is West, the function crops a square region of size crop_size around the left side of the gaze point. If the direction is East, the function crops a square region of size crop_size around the right side of the gaze point. If the direction is North, the function crops a square region of size crop_size around the top of the gaze point. If the direction is South, the function crops a square region of size crop_size around the bottom of the gaze point.
+
+After calculating the crop region, the function crops the region from the frame and saves it to the save_folder with a timestamp. Finally, it returns the cropped frame as output.
+The idea is to apply Detectron2 object detection algorithm to this cropped frame to identify the objectt the user is looking at. 
