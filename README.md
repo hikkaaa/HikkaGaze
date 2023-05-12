@@ -36,6 +36,5 @@ The idea is to apply Detectron2 object detection algorithm to this cropped frame
 
 
 ## TO DO:
-- implement Detectron2 algorithm for object detection
 - apply Detecron2 algorithm to cropped frame
 - adjust crop size according to experiment environment setup
