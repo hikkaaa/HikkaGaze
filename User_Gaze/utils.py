@@ -35,7 +35,7 @@ def angular(gaze, label):
   total = np.sum(gaze * label)
   return np.arccos(min(total/(np.linalg.norm(gaze)* np.linalg.norm(label)), 0.9999999))*180/np.pi
 
-def draw_gaze(a,b,c,d,image_in, pitchyaw, thickness=2, color=(255, 255, 0),sclae=2.0):
+def draw_gaze(a,b,c,d,image_in, pitchyaw, thickness=2, color=(255, 255, 0),scale=0.5):
     """Draw gaze angle on given image with a given eye positions."""
     image_out = image_in
     (h, w) = image_in.shape[:2]
@@ -48,6 +48,15 @@ def draw_gaze(a,b,c,d,image_in, pitchyaw, thickness=2, color=(255, 255, 0),sclae
     cv2.arrowedLine(image_out, tuple(np.round(pos).astype(np.int32)),
                    tuple(np.round([pos[0] + dx, pos[1] + dy]).astype(int)), color,
                    thickness, cv2.LINE_AA, tipLength=0.18)
+    # Calculate the width and height of the rectangle
+    width = int(scale * length)
+    height = int(scale * length)
+
+    # Calculate the top-left corner of the rectangle
+    top_left = (int(pos[0] + dx - width / 2), int(pos[1] + dy - height / 2))
+
+    # Draw the rectangle starting from the tip of the gaze arrow
+    cv2.rectangle(image_out, top_left, (top_left[0] + width, top_left[1] + height), color, thickness)
     return image_out    
 
 def select_device(device='', batch_size=None):
@@ -112,3 +121,6 @@ def git_describe(path=Path(__file__).parent):  # path must be a directory
         return ''  # not a git repository
         
 
+
+
+# cropped_frame = crop_around_gaze(frame, yaw_predicted, pitch_predicted, 200, 'C:/Users/francesca/Documents/Work/User_Gaze/Cropped Images', direction)

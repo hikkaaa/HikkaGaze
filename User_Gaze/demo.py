@@ -61,41 +61,6 @@ def getArch(arch,bins):
         model = L2CS( torchvision.models.resnet.Bottleneck, [3, 4, 6,  3], bins)
     return model
 
-def crop_around_gaze(frame, gaze_yaw, gaze_pitch, crop_size, save_folder, direction):
-    
-    # Calculate the gaze coordinates in the frame
-    gaze_x = int((gaze_yaw + 180) * frame.shape[1] / 360)
-    gaze_y = int((90 - gaze_pitch) * frame.shape[0] / 180)
-    
-    # Calculate the crop region based on the gaze coordinates and crop size
-    if direction == 'W':
-        crop_x = int(max(0, gaze_x - crop_size))
-        crop_y = int(max(0, gaze_y - crop_size/2))
-    elif direction == 'E':
-        crop_x = int(max(0, gaze_x))
-        crop_y = int(max(0, gaze_y - crop_size/2))
-    elif direction == 'N':
-        crop_x = int(max(0, gaze_x - crop_size/2))
-        crop_y = int(max(0, gaze_y - crop_size))
-    elif direction == 'S':
-        crop_x = int(max(0, gaze_x - crop_size/2))
-        crop_y = int(max(0, gaze_y))
-    
-
-    crop_w = int(min(frame.shape[1] - crop_x, crop_size))
-    crop_h = int(min(frame.shape[0] - crop_y, crop_size))
-    
-    # Crop the frame
-    cropped_frame = frame[crop_y:crop_y+crop_h, crop_x:crop_x+crop_w]
-    
-    # Save the cropped frame with timestamp
-    if not os.path.exists(save_folder):
-        os.makedirs(save_folder)
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
-    save_path = os.path.join(save_folder, f'cropped_frame_{timestamp}.jpg')
-    cv2.imwrite(save_path, cropped_frame)
-    
-    return cropped_frame
 
 
 def get_direction(gaze_yaw, gaze_pitch):
@@ -116,7 +81,7 @@ def get_direction(gaze_yaw, gaze_pitch):
         return 'N'
     else:
         return 'S'
-
+    
 
 
 if __name__ == '__main__':
@@ -216,13 +181,12 @@ if __name__ == '__main__':
                     direction = get_direction(yaw_predicted, pitch_predicted)
                     print(direction)
                     
-                    # crop image around gaze
-                    cropped_frame = crop_around_gaze(frame, yaw_predicted, pitch_predicted, 200, 'C:/Users/francesca/Documents/Work/User_Gaze/Cropped Images', direction)
-
                 
                     
                     draw_gaze(x_min,y_min,bbox_width, bbox_height,frame,(pitch_predicted,yaw_predicted),color=(0,0,255))
                     cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (0,255,0), 1)
+                    
+
 
             cv2.putText(frame, f'Gaze position: {direction}', (10, 20),cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 255, 0), 1, cv2.LINE_AA)
 
