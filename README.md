@@ -41,7 +41,9 @@ The modified draw_gaze function, in utils.py, computes the gaze area by drawing 
 
 https://github.com/hikkaaa/WORK/assets/92394378/ada00a03-5b6b-47ef-9f79-9582a254a037
 
+The enhanced functionality allows us to accurately determine the region of interest where the user is directing their attention within the frame. This capability is particularly relevant in 2D environments, such as controlled experiment settings, where users interact with a display or limited area.
 
+By precisely identifying and tracking the gaze area, we can extract that specific region from the frame. This controlled extraction enables us to apply Detectron2, exclusively to the area of interest. Detectron2, which empowers us to detect and analyze objects within the gaze area with high precision.
 
 ## TO DO:
 - apply Detecron2 algorithm to cropped frame
