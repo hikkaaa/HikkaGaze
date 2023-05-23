@@ -23,7 +23,7 @@ Finally, based on the angle value, the function returns the direction of the gaz
 https://user-images.githubusercontent.com/92394378/236919329-42a0eea4-79d5-4e87-9449-ea4bda5fc9cc.mp4
 
 
-
+### previous experiment (experimenting)
 **FRAME CROPPING** \
 This function takes as input a frame from a webcam or camera, along with gaze_yaw and gaze_pitch values, which are predicted by a gaze estimation algorithm. It also takes the crop_size of the region around the gaze point to be cropped and the save_folder, where the cropped images will be saved with a timestamp. Lastly, it takes the direction of the gaze point, which is predicted by the get_direction function.
 
@@ -33,6 +33,14 @@ If the direction is West, the function crops a square region of size crop_size a
 
 After calculating the crop region, the function crops the region from the frame and saves it to the save_folder with a timestamp. Finally, it returns the cropped frame as output.
 The idea is to apply Detectron2 object detection algorithm to this cropped frame to identify the objectt the user is looking at. 
+
+### new experiment
+**GAZE AREA**:
+The modified draw_gaze function, in utils.py, computes the gaze area by drawing a rectangle around the tip of the gaze arrow. The size of the rectangle can be controlled using the scale parameter. The function takes eye positions and gaze angles as inputs and visualizes the gaze angle on an image by drawing an arrow starting from the eye position and extending towards the gaze direction. Additionally, it includes a rectangle that represents the gaze area around the tip of the gaze arrow.
+
+
+https://github.com/hikkaaa/WORK/assets/92394378/ada00a03-5b6b-47ef-9f79-9582a254a037
+
 
 
 ## TO DO:
