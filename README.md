@@ -23,7 +23,7 @@ Finally, based on the angle value, the function returns the direction of the gaz
 https://user-images.githubusercontent.com/92394378/236919329-42a0eea4-79d5-4e87-9449-ea4bda5fc9cc.mp4
 
 
-### previous experiment (experimenting)
+### previous experiment 
 **FRAME CROPPING** \
 This function takes as input a frame from a webcam or camera, along with gaze_yaw and gaze_pitch values, which are predicted by a gaze estimation algorithm. It also takes the crop_size of the region around the gaze point to be cropped and the save_folder, where the cropped images will be saved with a timestamp. Lastly, it takes the direction of the gaze point, which is predicted by the get_direction function.
 
