@@ -45,6 +45,4 @@ The enhanced functionality allows us to accurately determine the region of inter
 
 By precisely identifying and tracking the gaze area, we can extract that specific region from the frame. This controlled extraction enables us to apply Detectron2, exclusively to the area of interest. Detectron2, which empowers us to detect and analyze objects within the gaze area with high precision.
 
-## TO DO:
-- apply Detecron2 algorithm to gaze area
-- adjust rectangle scale according to experiment environment setup
+
