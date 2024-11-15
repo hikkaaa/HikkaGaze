@@ -35,29 +35,42 @@ def angular(gaze, label):
   total = np.sum(gaze * label)
   return np.arccos(min(total/(np.linalg.norm(gaze)* np.linalg.norm(label)), 0.9999999))*180/np.pi
 
-def draw_gaze(a,b,c,d,image_in, pitchyaw, thickness=2, color=(255, 255, 0),scale=0.5):
-    """Draw gaze angle on given image with a given eye positions."""
+def draw_gaze(a, b, c, d, image_in, pitchyaw, thickness=2, color=(255, 255, 0), scale=0.5):
+    """
+    Draw gaze angle on the given image with a given eye position and return arrow coordinates.
+    """
     image_out = image_in
     (h, w) = image_in.shape[:2]
-    length = w/2
-    pos = (int(a+c / 2.0), int(b+d / 2.0))
+    length = w / 2
+    pos = (int(a + c / 2.0), int(b + d / 2.0))  # Arrow origin
+
     if len(image_out.shape) == 2 or image_out.shape[2] == 1:
         image_out = cv2.cvtColor(image_out, cv2.COLOR_GRAY2BGR)
+
+    # Compute arrow tip
     dx = -length * np.sin(pitchyaw[0]) * np.cos(pitchyaw[1])
     dy = -length * np.sin(pitchyaw[1])
-    cv2.arrowedLine(image_out, tuple(np.round(pos).astype(np.int32)),
-                   tuple(np.round([pos[0] + dx, pos[1] + dy]).astype(int)), color,
-                   thickness, cv2.LINE_AA, tipLength=0.18)
-    # Calculate the width and height of the rectangle
-    width = int(scale * length)
-    height = int(scale * length)
+    tip = (int(pos[0] + dx), int(pos[1] + dy))
 
-    # Calculate the top-left corner of the rectangle
-    top_left = (int(pos[0] + dx - width / 2), int(pos[1] + dy - height / 2))
+    # Draw arrow
+    cv2.arrowedLine(image_out, pos, tip, color, thickness, cv2.LINE_AA, tipLength=0.18)
 
-    # Draw the rectangle starting from the tip of the gaze arrow
-    cv2.rectangle(image_out, top_left, (top_left[0] + width, top_left[1] + height), color, thickness)
-    return image_out    
+    return image_out, pos, tip
+
+
+def classify_distraction(origin, tip, threshold=100):
+    """
+    Classify if the user is distracted based on the distance between origin and tip.
+    Args:
+        origin (tuple): Coordinates of the arrow origin.
+        tip (tuple): Coordinates of the arrow tip.
+        threshold (float): Distance threshold for distraction.
+    Returns:
+        bool: True if distracted, False otherwise.
+    """
+    # Compute Euclidean distance
+    distance = math.sqrt((tip[0] - origin[0])**2 + (tip[1] - origin[1])**2)
+    return distance > threshold   
 
 def select_device(device='', batch_size=None):
     # device = 'cpu' or '0' or '0,1,2,3'
